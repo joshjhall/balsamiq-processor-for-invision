@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.invision.wireframes</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/Users/[USER ACCOUNT]/.rvm/wrappers/ruby-2.1.2@invision/rake</string>
+		<string>-f</string>
+		<string>/Users/[USER ACCOUNT]/Development/invision/Rakefile</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>StandardErrorPath</key>
+	<string>/Users/[USER ACCOUNT]/Development/invision/log/error.log</string>
+	<key>WorkingDirectory</key>
+	<string>/Users/[USER ACCOUNT]/Development/invision</string>
+</dict>
+</plist>

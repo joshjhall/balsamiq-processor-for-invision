@@ -5,6 +5,11 @@ require 'fileutils'
 class LogInfo
   # Initialize variables needed
   def initialize file = nil
+    # Make sure the ./log directory exists
+    unless Dir.exist?("log")
+      Dir.mkdir("log")
+    end
+    
     # Set the log file during initialization
     if file
       # Make sure the file exists, so we don't have issues getting a complete path

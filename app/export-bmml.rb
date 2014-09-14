@@ -2,6 +2,7 @@ require 'pathname'
 require 'fileutils'
 require './app/log.rb'
 require './app/settings.rb'
+require './app/index.rb'
 
 # Exports BMML to PNG for InVision integration
 
@@ -14,6 +15,9 @@ class ExportBmml
     
     # Instantiate @log class to log events
     @log = LogInfo.new @settings['exportLog']
+    
+    # Instantiate @indexer class to index files
+    @index = Index.new
   end
   
   
@@ -25,7 +29,7 @@ class ExportBmml
     # 3. Remove any sub-directories under Screens, because InVision will ignore them
     output = file.gsub(/\/Assets\/Wireframes\//, '/Screens/').gsub(/\.bmml/, '.png').gsub(/\/Screens\/.*\/([^\/]*\.png)/, '/Screens/\1')
     
-    return output
+    output
   end
   
   
@@ -42,29 +46,31 @@ class ExportBmml
   
   
   # Export the BMML file passed
-  # file = path to a .bmml file
-  def file(file)
+  # file: path to a .bmml file
+  def file(file, force = false)
     # Make sure we have the absolute path
     file = File.absolute_path file
     
-    # Log what is about to be processed
-    puts @log.info "Processing file `" + File.basename(file) + "`"
+    # Only export items that are new or updated
+    if @index.updated? file or force
+      # Log what is about to be processed
+      puts @log.info "Processing file `" + File.basename(file) + "`"
     
-    # Clean up the filename entered to ensure proper escaping
-    input = Shellwords.escape(file)
+      # Clean up the filename entered to ensure proper escaping
+      input = Shellwords.escape(file)
     
-    # Get and cleanup the filename for the related PNG
-    output = Shellwords.escape(png(file))
+      # Get and cleanup the filename for the related PNG
+      output = Shellwords.escape(png(file))
     
-    # Join elements for the final output component of the command
-    cmd = "#{@settings['balsamiqBin']} export #{input} #{output}"
+      # Join elements for the final output component of the command
+      cmd = "#{@settings['balsamiqBin']} export #{input} #{output}"
     
-    result = `#{cmd}`
-    # Run the command with bash in a thread (hopefully this will mitigate race conditions, but needs further testing)
-    # t = Thread.new {
-    #   Thread.current["run"] = cmd
-    #   Thread.current["result"] = `#{Thread.current["run"]}`
-    # }
+      # Run the export using the Balsamiq desktop client
+      result = `#{cmd}`
+    
+      # Store the hash in the indexer for future reference
+      @index.update file
+    end
   end
   
   
@@ -84,7 +90,7 @@ class ExportBmml
         unless f =~ /\/Wireframes.*\/assets\//
           # Export all of the bmml files found
           # file File.absolute_path f
-          file f
+          file f, true
         end
       end
       
@@ -110,7 +116,7 @@ class ExportBmml
         # Ignore .bmml files in the asset directory
         unless f =~ /\/Wireframes.*\/assets\//
           # Export all of the bmml files found
-          file f
+          file f, true
         end
       end
       

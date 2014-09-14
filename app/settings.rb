@@ -15,9 +15,13 @@ class Settings
     
     # Build the full path to the site assets project, and escape ~ with HOME variable
     @settings['componentsProject'] = Shellwords.escape(@settings['accountRoot'] + "/" + @settings['componentsProject'].gsub(/~/, ENV['HOME']) + "/Assets/Wireframes")
+    
+    # Put the index file into ./data
+    @settings['indexFile'] = Shellwords.escape(File.absolute_path("data/" + @settings['indexFile']))
   end
   
   def get
-    return @settings
+    # Return the processed settings variable
+    @settings
   end
 end

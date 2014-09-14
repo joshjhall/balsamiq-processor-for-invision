@@ -1,5 +1,5 @@
-Invision
-========
+Balsamiq Processor for InVision
+===============================
 
 Automatically convert BMML files into PNG for Balsamiq integration with InVision
 
@@ -63,11 +63,8 @@ There are several settings, but these are mostly self-explantory.  Tilda (~) can
 
 
 
-Script Usage
-============
-
-Rake tasks
-----------
+Usage
+=====
 
 Rake tasks allow manual access to key functions.  Basic syntax is `rake task`.  An optional parameter can be passed to identify the requestor `rake task[user_name]`; however, this isn't necessary as parallel processing isn't useful in this context.
 
@@ -76,10 +73,10 @@ Rake tasks allow manual access to key functions.  Basic syntax is `rake task`.  
 
 
 
-TODO
-====
+TODO list
+=========
 
-* Improve documentation of the processes
+* Improve documentation of the processes (whitepaper)
 * Expand script to keep track of files that have or haven't been updated.  Preferably store a hash of each bmml to check against and determine if an export is necessary.  This would substantially help if the transcode machine goes offline, or something is missed by the listener (in short, error recovery)
-* Instead of mass exporting for updated components or project assets, parse each bmml and determine if it's required on a per file basis
 * Use stored hash / bmml file list to also cleanup old PNGs during recovery
+* Instead of mass exporting for updated components or project assets, parse each bmml and determine if it's required on a per file basis

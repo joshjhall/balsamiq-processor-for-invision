@@ -3,11 +3,11 @@ require './app/listener.rb'
 
 
 # Default task definition
-task :default => :export
+task :default => :listen
 
 
 # Execute the export task
-task :export do
+task :listen do
   # Start the listener
   l = Listener.new
 end

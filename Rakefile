@@ -1,5 +1,6 @@
 require 'rubygems'
 require './app/listener.rb'
+require './app/scanner.rb'
 
 
 # Default task definition
@@ -12,7 +13,10 @@ task :listen do
   l = Listener.new
 end
 
-# Update / install gems
-task :update do
-  puts `bundle update`
+
+task :scan do
+  # Check if anything needs to be processed
+  s = Scanner.new
+  
+  s.all
 end

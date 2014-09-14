@@ -9,6 +9,9 @@
 /test/version_tmp/
 /tmp/
 
+## Settings should not be committed to repo
+/config/settings.json
+
 ## Specific to RubyMotion:
 .dat*
 .repl_history

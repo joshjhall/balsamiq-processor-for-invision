@@ -9,6 +9,9 @@
 /test/version_tmp/
 /tmp/
 
+## OS X junk
+.DS_store
+
 ## Settings should not be committed to repo
 /config/settings.json
 

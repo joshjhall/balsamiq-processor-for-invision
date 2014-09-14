@@ -30,6 +30,7 @@ Balsamiq Site Assets
 Designers or PMs that use the Balsamiq desktop editor need to install `BalsamiqMockups.cfg` to have access to the global components.
 
 This is pretty easy to do.
+
 1. Open the desktop version of Balsamiq
 2. Go to `File > About`
 3. Click on `Open Local Store Folder`

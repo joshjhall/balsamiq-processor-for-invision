@@ -11,22 +11,6 @@ Setup
 Start by making sure you have the command line x-code tools installed.  Open a terminal window and run `gcc` to force the installer if needed (will complain about not having any input files if the command line tools are already installed).
 
 
-Homebrew
---------
-
-Could also use Macports, but Homebrew ([http://brew.sh]) is generally easier to get setup and running correctly with RVM.  Once installed, run the following commands to install some of the dependencies.
-* `brew install node`
-* `brew install osxutils`
-
-
-RVM
----
-
-Needed to install Ruby and gems into a sandboxed environment.  Generally a good idea, and mitigates the need for su rights all of the time.  Install instructions are available at [http://rvm.io/].  Homebrew needs to be installed first, so additional depenencies can be installed and compiled.  Install Ruby 2.1.2 with `rvm install ruby-2.1.2`, because this is what I've tested everything with (later versions should be fine, but may require some debugging and updated dependencies).
-
-Changing to the project directory in terminal will automatically install the gem dependencies.  However, you can also run `bundle` in the correct directory to ensure they're installed.
-
-
 Balsamiq Site Assets
 --------------------
 
@@ -69,7 +53,7 @@ Usage
 Rake tasks allow manual access to key functions.  Basic syntax is `rake task`.  An optional parameter can be passed to identify the requestor `rake task[user_name]`; however, this isn't necessary as parallel processing isn't useful in this context.
 
 * `rake listen` => start the listener
-* `rake update` => update dependencies (may remove in next release)
+* `rake scan` => scan for changes across all projects that were not updated with the listener
 
 
 

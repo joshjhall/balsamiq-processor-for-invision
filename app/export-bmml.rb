@@ -22,7 +22,7 @@ class ExportBmml
   
   
   # Get the PNG related to a BMML file
-  def png(file)
+  def screenName(file)
     # Define the output file based on the input
     # 1. Move to screens directory
     # 2. Change extension from bmml to png
@@ -34,6 +34,8 @@ class ExportBmml
   
   
   # Clean out old PNG file
+  # TODO remove old PNG screens based on index
+  # TODO clean out old index elements
   def clean(file)
     # Make sure we have the absolute path
     file = File.absolute_path file
@@ -41,7 +43,7 @@ class ExportBmml
     # Log what is about to be processed
     puts @log.info "Deleting output for `" + File.basename(file) + "`"
     
-    File.delete png(file)
+    File.delete screenName(file)
   end
   
   
@@ -60,7 +62,7 @@ class ExportBmml
       input = Shellwords.escape(file)
     
       # Get and cleanup the filename for the related PNG
-      output = Shellwords.escape(png(file))
+      output = Shellwords.escape(screenName(file))
     
       # Join elements for the final output component of the command
       cmd = "#{@settings['balsamiqBin']} export #{input} #{output}"
@@ -68,8 +70,35 @@ class ExportBmml
       # Run the export using the Balsamiq desktop client
       result = `#{cmd}`
     
-      # Store the hash in the indexer for future reference
+      # Store the hash of the exported file in the indexer for future reference
       @index.update file
+    end
+  end
+  
+  
+  # Export all files in a directory, and update the appropriate indecies
+  def processDir
+    # Walk through all project files
+    Dir.glob("**/*").each do |f|
+      # Only consider file types that we care about, and ignore the Screens dir
+      if @settings['fileTypes'].include?((File.extname f).downcase) and \
+        not File.dirname(f).end_with?('Screens')
+        
+        # Only export .bmml files
+        if (File.extname f).downcase == '.bmml'
+          # Don't export .bmml files in the asset directory
+          unless f =~ /\/Wireframes.*\/assets\//
+            # Export all of the bmml files found
+            file f, true
+          end
+        end
+        
+        # Update all of the indecies for the appropriate files in the project
+        if @index.updated? File.absolute_path f
+          # Store the hash of the exported file in the indexer for future reference
+          @index.update File.absolute_path f
+        end
+      end
     end
   end
   
@@ -81,18 +110,8 @@ class ExportBmml
       # Log beginning of project export
       puts @log.info "Begin exporting project `" + project + "`"
       
-      # Locate all BMML files to export
-      bmmlFiles = File.join("**", "*.bmml")
-    
-      # Walk through all available BMML files
-      Dir.glob(bmmlFiles).each do |f|
-        # Ignore .bmml files in the asset directory
-        unless f =~ /\/Wireframes.*\/assets\//
-          # Export all of the bmml files found
-          # file File.absolute_path f
-          file f, true
-        end
-      end
+      # Process the directory
+      processDir
       
       # Log completion of project
       puts @log.info "Done exporting project `" + project + "`"
@@ -108,17 +127,8 @@ class ExportBmml
       # Log beginning of complete export
       puts @log.info "Begin exporting all projects"
       
-      # Locate all BMML files to export
-      bmmlFiles = File.join("**", "*.bmml")
-    
-      # Walk through all available BMML files
-      Dir.glob(bmmlFiles).each do |f|
-        # Ignore .bmml files in the asset directory
-        unless f =~ /\/Wireframes.*\/assets\//
-          # Export all of the bmml files found
-          file f, true
-        end
-      end
+      # Process the directory
+      processDir
       
       # Log completion of export
       puts @log.info "Done exporting all projects"

@@ -2,6 +2,16 @@
   "accountRoot": "~/InVision/[ENTERPRISE NAME]",
   "balsamiqBin": "/Applications/Balsamiq Mockups.app/Contents/MacOS/Balsamiq Mockups",
   "exportLog": "log/export.log",
+  "scannerLog": "log/scanner.log",
   "listenerLog": "log/listener.log",
-  "componentsProject": "Components"
+  "indexLog": "log/index.log",
+  "componentsProject": "Components",
+  "indexFile": "index.json",
+  "fileTypes": [
+    ".bmml",
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".gif"
+  ]
 }

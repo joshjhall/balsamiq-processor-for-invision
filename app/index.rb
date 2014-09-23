@@ -29,6 +29,13 @@ class Index
     end
     
     # Load the existing index file
+    refresh
+  end
+  
+  
+  # Refresh loaded content
+  def refresh
+    # Load the existing index file
     @index = File.open(@settings['indexFile'], 'r'){|f| JSON.load(f)} || {}
   end
   
@@ -52,6 +59,11 @@ class Index
       end
     end
     
+    # Log that the file is found stale
+    if updated
+      @log.info "`#{file}` is stale"
+    end
+    
     # return update status
     updated
   end
@@ -61,6 +73,9 @@ class Index
   def update(file)
     # Update the index for this file
     @index[file] = getMD5 file
+    
+    # Log the new hash for the file
+    @log.info "`#{file}` hash updated to #{@index[file]}"
     
     # save the index out to disk
     save

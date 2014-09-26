@@ -26,9 +26,10 @@ class Scanner
   end
   
   
-  # TODO Add function to also scan for files that have been removed since the last index
+  # TODO Also scan for files that have been removed since the last index
   # Scan all projects to update anything new
   def all
+    ### Figure out which are stale files ###
     # Log beginning of index process
     puts @log.info "Begin indexing all projects"
     
@@ -77,7 +78,6 @@ class Scanner
             
             # include the file
             file.push File.absolute_path(f)
-            
           end
         end
       end
@@ -93,19 +93,24 @@ class Scanner
     # If a component is updated, export everything
     unless component.empty?
       @export.all
+    
+    # If we aren't exporting everything, export what we found
     else
-      
       # If a project is updated, export each project first
       unless project.empty?
         project.each do |p|
           @export.project p
         end
-        
+      end
+      
       # Export individual files remaining
-      # TODO create exception for the projects that have been exported
-      else
+      unless file.empty?
         file.each do |n|
-          @export.file n
+          # Make sure we haven't already updated this file with a project export
+          if @index.updated? n
+            # Export the individual file
+            @export.file n
+          end
         end
       end
     end

@@ -57,19 +57,19 @@ class ExportBmml
     if @index.updated? file or force
       # Log what is about to be processed
       puts @log.info "Processing file `" + File.basename(file) + "`"
-    
+      
       # Clean up the filename entered to ensure proper escaping
       input = Shellwords.escape(file)
-    
+      
       # Get and cleanup the filename for the related PNG
       output = Shellwords.escape(screenName(file))
-    
+      
       # Join elements for the final output component of the command
       cmd = "#{@settings['balsamiqBin']} export #{input} #{output}"
-    
+      
       # Run the export using the Balsamiq desktop client
       result = `#{cmd}`
-    
+      
       # Store the hash of the exported file in the indexer for future reference
       @index.update file
     end

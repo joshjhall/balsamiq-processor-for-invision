@@ -59,10 +59,11 @@ class Index
       end
     end
     
+    # Commented out, because this gets hit quite frequently and doesn't add much value any longer
     # Log that the file is found stale
-    if updated
-      @log.info "`#{file}` is stale"
-    end
+    # if updated
+    #   @log.info "`#{file}` is stale"
+    # end
     
     # return update status
     updated

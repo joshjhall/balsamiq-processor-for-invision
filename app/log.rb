@@ -26,7 +26,7 @@ class LogInfo
   # Print the info log entry to both the console and the log file
   def info entry
     # Set the final string for the log
-    entry = "[" + Time.now.strftime("%Y-%m-%d %H:%M:%S:%L %Z") + "] " + entry
+    entry = "[#{Time.now.strftime("%Y-%m-%d %H:%M:%S:%L %Z")}] " + entry
     
     if @logFile
       # Put in the log file, and ensure the file is closed immediately

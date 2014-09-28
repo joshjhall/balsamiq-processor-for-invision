@@ -53,6 +53,9 @@ class ExportBmml
     # Make sure we have the absolute path
     file = File.absolute_path file
     
+    # Close any open tabs in Balsamiq
+    cmd = `#{@settings['closeWindows']}`
+    
     # Only export items that are new or updated
     if @index.updated? file or force
       # Log what is about to be processed

@@ -1,4 +1,5 @@
 require 'json'
+require 'shellwords'
 require 'fileutils'
 
 # Simple class to load up the settings file in one place
@@ -18,6 +19,12 @@ class Settings
     
     # Put the index file into ./data
     @settings['indexFile'] = Shellwords.escape(File.absolute_path("data/" + @settings['indexFile']))
+    
+    # Build the full path to the app directory
+    @settings['appDir'] = File.absolute_path(Shellwords.escape(@settings['appDir'].gsub(/~/, ENV['HOME'])))
+    
+    # Build the close windows script call
+    @settings['closeWindows'] = "osascript #{File.join(@settings['appDir'], Shellwords.escape(@settings['closeWindows']))}"
   end
   
   def get

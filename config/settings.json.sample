@@ -1,10 +1,12 @@
 {
   "accountRoot": "~/InVision/[ENTERPRISE NAME]",
   "balsamiqBin": "/Applications/Balsamiq Mockups.app/Contents/MacOS/Balsamiq Mockups",
-  "exportLog": "log/export.log",
+  "appDir": "app",
+  "closeWindows": "close-windows.applescript",
+  "exportLog": "log/scanner.log",
   "scannerLog": "log/scanner.log",
-  "listenerLog": "log/listener.log",
-  "indexLog": "log/index.log",
+  "listenerLog": "log/scanner.log",
+  "indexLog": "log/scanner.log",
   "componentsProject": "Components",
   "indexFile": "index.json",
   "fileTypes": [

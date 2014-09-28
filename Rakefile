@@ -1,22 +1,32 @@
 require 'rubygems'
-require './app/listener.rb'
+require 'pathname'
+require 'fileutils'
 require './app/scanner.rb'
+require './app/log.rb'
 
 
 # Default task definition
-task :default => :listen
+task :default => :scan
 
 
-# Execute the export task
-task :listen do
-  # Start the listener
-  l = Listener.new
-end
-
-
+# Run scan task
 task :scan do
-  # Check if anything needs to be processed
-  s = Scanner.new
-  
-  s.all
+  l = LogInfo.new
+  lock = 'scanner.lockfile'
+
+  # Ensure we aren't already running this process
+  if Pathname(lock).exist?
+    puts l.info "Lockfile `#{lock}` already exists. Skipping process."
+
+  else
+    # Lock the process, so we don't try to run a second instance
+    FileUtils.touch(lock)
+    
+    # Run the potentially long running script
+    s = Scanner.new
+    s.all
+    
+    # Unlock the process again
+    FileUtils.rm(lock)
+  end
 end

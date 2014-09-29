@@ -9,7 +9,6 @@ require './app/index.rb'
 # Exports all BMMLs that have out-dated PNGs
 # Also cleans up any old PNGs that no longer have BMMLs
 
-# TODO Also scan for files that have been removed since the last index
 class Scanner
   # Initialize variables needed
   def initialize
@@ -25,6 +24,39 @@ class Scanner
     
     # Instantiate @indexer class to index files
     @index = Index.new
+  end
+  
+  
+  # Get the file context
+  def fileContext(f)
+    out = {}
+    
+    # Capture this if it's a component
+    if File.dirname(f) == @settings['componentsProject'] or \
+      File.dirname(f) == File.absolute_path(@settings['componentsProject'])
+      
+      out[:component] = File.absolute_path(f)
+      
+    # Capture this if it's a project asset
+    elsif File.dirname(f).end_with?('assets')
+      # Add the project to the project list
+      path = f
+      path.slice! @settings['accountRoot'] + '/'
+      path = path.split('/')[0]
+      
+      # Find just the first directory in the path, this is the project dir
+      out[:project] = File.join(@settings['accountRoot'], path)
+      
+    # Check for individual files
+    elsif not File.dirname(f) == @settings['componentsProject'] and \
+      not File.dirname(f).end_with?('assets')
+      
+      # Include the file
+      out[:file] = File.absolute_path(f)
+    end
+    
+    # Return the file context
+    out
   end
   
   
@@ -48,28 +80,22 @@ class Scanner
         not File.dirname(f).end_with?('Screens') and \
         @index.updated? f
         
+        # Get the file context
+        context = fileContext f
+        
         # Capture this if it's a component
-        if File.dirname(f) == @settings['componentsProject']
-          # Add the file to the component list
-          stale[:component].push File.absolute_path(f)
+        if context[:component]
+          stale[:component].push context[:component]
           
         # Capture this if it's a project asset
-        elsif File.dirname(f).end_with?('assets')
-          # Add the project to the project list
-          path = f
-          path.slice! @settings['accountRoot'] + '/'
-          path = path.split('/')[0]
-      
-          # Find just the first directory in the path, this is the project dir
-          stale[:project].push File.join(@settings['accountRoot'], path)
+        elsif context[:project]
+          stale[:project].push context[:project]
           
         # Check for individual files
-        elsif not File.dirname(f) == @settings['componentsProject'] and \
-          not File.dirname(f).end_with?('assets') and (\
-          File.extname f).downcase == ".bmml"
-          
-          # include the file
-          stale[:file].push File.absolute_path(f)
+        elsif context[:file]
+          if (File.extname context[:file]).downcase == ".bmml"
+            stale[:file].push context[:file]
+          end
         end
       end
     end
@@ -84,13 +110,57 @@ class Scanner
   end
   
   
-  # Scan all projects to update anything new
-  def all
-    # Close any open tabs in Balsamiq
-    cmd = `#{@settings['closeWindows']}`
+  # Get all of the missing files that are in the index
+  def deletedFiles
+    # Log beginning of deleted file check
+    puts @log.info "Looking for deleted files"
     
-    # Refresh @index to ensure we have the latest copy loaded in memory
-    # @index.refresh
+    # Variable to store list of files that were deleted
+    stale = { :component => [], :project => [], :file => [] }
+    
+    # Get the current index to identify deleted files
+    index = @index.get
+    
+    index.each do |f, m|
+      # Only consider files that no longer exist
+      unless File.exist?(f)
+        # Get the file context
+        context = fileContext f
+        
+        # Capture this if it's a component
+        if context[:component]
+          deleted[:component].push context[:component]
+          
+        # Capture this if it's a project asset
+        elsif context[:project]
+          deleted[:project].push context[:project]
+          
+        # Check for individual files
+        elsif context[:file]
+          if (File.extname context[:file]).downcase == ".bmml"
+            deleted[:file].push context[:file]
+          end
+        end
+        
+        # Remove the reference from the index
+        @index.delete f
+      end
+    end
+    
+    # Cleanup the duplicates (if any)
+    deleted[:component].uniq!
+    deleted[:project].uniq!
+    deleted[:file].uniq!
+    
+    # Return the list of deleted files
+    deleted
+  end
+  
+  
+  # Scan all projects to update anything new
+  def scan
+    # Close any open tabs in Balsamiq, also ensures Balsamiq is open
+    cmd = `#{@settings['closeWindows']}`
     
     ### Figure out which are stale files ###
     # Change to the root directory
@@ -98,9 +168,13 @@ class Scanner
       # Get the list of stale files
       stale = staleFiles
       
+      # Get the list of deleted files
+      deleted = deletedFiles
+      
       ### Export stale files ###
       # If a component is updated, export everything
-      unless stale[:component].empty?
+      unless stale[:component].empty? and \
+        deleted[:component].empty?
         @export.all
     
       # If we aren't exporting everything, export what we found
@@ -108,6 +182,16 @@ class Scanner
         # If a project is updated, export each project first
         unless stale[:project].empty?
           stale[:project].each do |p|
+            @export.project p
+            
+            # Drop any duplicates of this project in deleted
+            deleted[:project].delete(p)
+          end
+        end
+        
+        # If a project has something deleted, export the projects again
+        unless deleted[:project].empty?
+          deleted[:project].each do |p|
             @export.project p
           end
         end
@@ -122,10 +206,17 @@ class Scanner
             end
           end
         end
+        
+        # Delete the individual orphan files remaining
+        unless deleted[:file].empty?
+          deleted[:file].each do |n|
+            @export.delete n
+          end
+        end
       end
     end
     
-    # Close any open tabs in Balsamiq
+    # Close any open tabs in Balsamiq, also ensures Balsamiq is open
     cmd = `#{@settings['closeWindows']}`
   end
 end

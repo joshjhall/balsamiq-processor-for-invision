@@ -40,6 +40,26 @@ class Index
   end
   
   
+  # Get @index for stepping through
+  def get
+    # Start by making sure the index file is updated
+    refresh
+    
+    # Return the current index list
+    @index
+  end
+  
+  
+  # Delete a file reference
+  def delete(f)
+    # Delete the file reference
+    @index.delete(f)
+    
+    # Save the file to disk
+    save
+  end
+  
+  
   # Save @index out to disk
   def save
     File.open(@settings['indexFile'], 'w'){|f| f.puts(@index.to_json)}
@@ -47,23 +67,17 @@ class Index
   
   
   # Check if this file has been updated since
-  def updated?(file)
+  def updated?(f)
     # Start by assuming this is an updated or new file
     updated = true
     
     # See if the file exists already
-    if @index[file]
+    if @index[f]
       # Nothing new for this file
-      if @index[file] == getMD5(file)
+      if @index[f] == getMD5(f)
         updated = false
       end
     end
-    
-    # Commented out, because this gets hit quite frequently and doesn't add much value any longer
-    # Log that the file is found stale
-    # if updated
-    #   @log.info "`#{file}` is stale"
-    # end
     
     # return update status
     updated
@@ -71,12 +85,12 @@ class Index
   
   
   # Update the hash in the index for this file
-  def update(file)
+  def update(f)
     # Update the index for this file
-    @index[file] = getMD5 file
+    @index[f] = getMD5 file
     
     # Log the new hash for the file
-    @log.info "`#{file}` hash updated to #{@index[file]}"
+    @log.info "`#{f}` hash updated to #{@index[f]}"
     
     # save the index out to disk
     save
@@ -84,9 +98,9 @@ class Index
   
   
   # Get the index of the file
-  def getMD5(file)
+  def getMD5(f)
     # Get the MD5 hash by reading blocks, so we don't need to open the file in memory
-    md5 = Digest::MD5.file(file).hexdigest
+    md5 = Digest::MD5.file(f).hexdigest
     
     # return the hash
     md5

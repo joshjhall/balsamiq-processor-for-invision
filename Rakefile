@@ -24,7 +24,7 @@ task :scan do
     
     # Run the potentially long running script
     s = Scanner.new
-    s.all
+    s.scan
     
     # Unlock the process again
     FileUtils.rm(lock)

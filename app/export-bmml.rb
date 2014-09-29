@@ -22,50 +22,54 @@ class ExportBmml
   
   
   # Get the PNG related to a BMML file
-  def screenName(file)
+  def screenName(f)
     # Define the output file based on the input
     # 1. Move to screens directory
     # 2. Change extension from bmml to png
     # 3. Remove any sub-directories under Screens, because InVision will ignore them
-    output = file.gsub(/\/Assets\/Wireframes\//, '/Screens/').gsub(/\.bmml/, '.png').gsub(/\/Screens\/.*\/([^\/]*\.png)/, '/Screens/\1')
+    output = f.gsub(/\/Assets\/Wireframes\//, '/Screens/').gsub(/\.bmml/, '.png').gsub(/\/Screens\/.*\/([^\/]*\.png)/, '/Screens/\1')
     
     output
   end
   
   
   # Clean out old PNG file
-  # TODO remove old PNG screens based on index
-  # TODO clean out old index elements
-  def clean(file)
-    # Make sure we have the absolute path
-    file = File.absolute_path file
-    
+  def delete(f)
     # Log what is about to be processed
-    puts @log.info "Deleting output for `" + File.basename(file) + "`"
+    puts @log.info "Deleting output for `#{File.basename(f)}`"
     
-    File.delete screenName(file)
+    # Delete the orphan PNG file
+    if File.exist? f
+      File.delete screenName(f)
+    end
+    
+    # Make sure we don't have a relative path problem
+    f = File.absolute_path f
+    if File.exist? f
+      File.delete screenName(f)
+    end
   end
   
   
   # Export the BMML file passed
   # file: path to a .bmml file
-  def file(file, force = false)
+  def file(f, force = false)
     # Make sure we have the absolute path
-    file = File.absolute_path file
+    f = File.absolute_path f
     
     # Close any open tabs in Balsamiq
     cmd = `#{@settings['closeWindows']}`
     
     # Only export items that are new or updated
-    if @index.updated? file or force
+    if @index.updated? f or force
       # Log what is about to be processed
-      puts @log.info "Processing file `" + File.basename(file) + "`"
+      puts @log.info "Processing file `#{File.basename(f)}`"
       
       # Clean up the filename entered to ensure proper escaping
-      input = Shellwords.escape(file)
+      input = Shellwords.escape(f)
       
       # Get and cleanup the filename for the related PNG
-      output = Shellwords.escape(screenName(file))
+      output = Shellwords.escape(screenName(f))
       
       # Join elements for the final output component of the command
       cmd = "#{@settings['balsamiqBin']} export #{input} #{output}"
@@ -74,7 +78,7 @@ class ExportBmml
       result = `#{cmd}`
       
       # Store the hash of the exported file in the indexer for future reference
-      @index.update file
+      @index.update f
     end
   end
   
@@ -107,17 +111,17 @@ class ExportBmml
   
   
   # Export all BMML for the project passed
-  def project(project)
+  def project(p)
     # Change working directory to accountRoot
-    Dir.chdir project do
+    Dir.chdir p do
       # Log beginning of project export
-      puts @log.info "Begin exporting project `" + project + "`"
+      puts @log.info "Begin exporting project `#{p}`"
       
       # Process the directory
       processDir
       
       # Log completion of project
-      puts @log.info "Done exporting project `" + project + "`"
+      puts @log.info "Done exporting project `#{p}`"
     end
   end
   

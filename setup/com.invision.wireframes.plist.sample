@@ -8,13 +8,15 @@
 	<array>
 		<string>/Users/[USER ACCOUNT]/.rvm/wrappers/ruby-2.1.2@invision/rake</string>
 		<string>-f</string>
-		<string>/Users/[USER ACCOUNT]/Development/invision/Rakefile</string>
+		<string>/Users/[USER ACCOUNT]/balsamiq-processor-for-invision/Rakefile</string>
 	</array>
 	<key>RunAtLoad</key>
 	<true/>
 	<key>StandardErrorPath</key>
-	<string>/Users/[USER ACCOUNT]/Development/invision/log/error.log</string>
+	<string>/Users/[USER ACCOUNT]/balsamiq-processor-for-invision/log/error.log</string>
+	<key>StartInterval</key>
+	<integer>60</integer>
 	<key>WorkingDirectory</key>
-	<string>/Users/[USER ACCOUNT]/Development/invision</string>
+	<string>/Users/[USER ACCOUNT]/balsamiq-processor-for-invision</string>
 </dict>
 </plist>

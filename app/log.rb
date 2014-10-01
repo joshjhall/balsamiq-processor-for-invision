@@ -5,6 +5,11 @@ require 'fileutils'
 class LogInfo
   # Initialize variables needed
   def initialize file = nil
+    # Make sure the ./log directory exists
+    unless Dir.exist?("log")
+      Dir.mkdir("log")
+    end
+    
     # Set the log file during initialization
     if file
       # Make sure the file exists, so we don't have issues getting a complete path
@@ -21,7 +26,7 @@ class LogInfo
   # Print the info log entry to both the console and the log file
   def info entry
     # Set the final string for the log
-    entry = "[" + Time.now.strftime("%Y-%m-%d %H:%M:%S:%L %Z") + "] " + entry
+    entry = "[#{Time.now.strftime("%Y-%m-%d %H:%M:%S:%L %Z")}] #{entry}"
     
     if @logFile
       # Put in the log file, and ensure the file is closed immediately

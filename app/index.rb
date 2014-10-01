@@ -25,7 +25,7 @@ class Index
     
     # Make sure the index file exists
     unless File.exist?(@settings['indexFile'])
-      cmd = `touch #{@settings['indexFile']}`
+      cmd = `touch #{Shellwords.escape(@settings['indexFile'])}`
     end
     
     # Load the existing index file
@@ -87,7 +87,7 @@ class Index
   # Update the hash in the index for this file
   def update(f)
     # Update the index for this file
-    @index[f] = getMD5 file
+    @index[f] = getMD5 f
     
     # Log the new hash for the file
     @log.info "`#{f}` hash updated to #{@index[f]}"

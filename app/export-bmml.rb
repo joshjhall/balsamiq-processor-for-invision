@@ -65,14 +65,8 @@ class ExportBmml
       # Log what is about to be processed
       puts @log.info "Processing file `#{File.basename(f)}`"
       
-      # Clean up the filename entered to ensure proper escaping
-      input = Shellwords.escape(f)
-      
-      # Get and cleanup the filename for the related PNG
-      output = Shellwords.escape(screenName(f))
-      
       # Join elements for the final output component of the command
-      cmd = "#{@settings['balsamiqBin']} export #{input} #{output}"
+      cmd = "#{Shellwords.escape(@settings['balsamiqBin'])} export #{Shellwords.escape(f)} #{Shellwords.escape(screenName(f))}"
       
       # Run the export using the Balsamiq desktop client
       result = `#{cmd}`

@@ -28,7 +28,7 @@ class Scanner
   
   
   # Get the file context
-  def fileContext(f)
+  def fileContext(f, input)
     out = {}
     
     # Capture this if it's a component
@@ -41,11 +41,11 @@ class Scanner
     elsif File.dirname(f).end_with?('assets')
       # Add the project to the project list
       path = f
-      path.slice! @settings['accountRoot'] + '/'
+      path.slice!(Shellwords.escape(@settings['accountRoot']) + '/')
       path = path.split('/')[0]
       
       # Find just the first directory in the path, this is the project dir
-      out[:project] = File.join(@settings['accountRoot'], path)
+      out[:project] = Shellwords.escape(File.join(@settings['accountRoot'], path))
       
     # Check for individual files
     elsif not File.dirname(f) == @settings['componentsProject'] and \
@@ -55,8 +55,23 @@ class Scanner
       out[:file] = File.absolute_path(f)
     end
     
-    # Return the file context
-    out
+    # Capture this if it's a component
+    if out[:component]
+      input[:component].push out[:component]
+      
+    # Capture this if it's a project asset
+    elsif out[:project]
+      input[:project].push out[:project]
+      
+    # Check for individual files
+    elsif out[:file]
+      if (File.extname out[:file]).downcase == ".bmml"
+        input[:file].push out[:file]
+      end
+    end
+    
+    # Return the processed input
+    input
   end
   
   
@@ -81,22 +96,7 @@ class Scanner
         @index.updated? f
         
         # Get the file context
-        context = fileContext f
-        
-        # Capture this if it's a component
-        if context[:component]
-          stale[:component].push context[:component]
-          
-        # Capture this if it's a project asset
-        elsif context[:project]
-          stale[:project].push context[:project]
-          
-        # Check for individual files
-        elsif context[:file]
-          if (File.extname context[:file]).downcase == ".bmml"
-            stale[:file].push context[:file]
-          end
-        end
+        stale = fileContext f, stale
       end
     end
     
@@ -116,7 +116,7 @@ class Scanner
     puts @log.info "Looking for deleted files"
     
     # Variable to store list of files that were deleted
-    stale = { :component => [], :project => [], :file => [] }
+    deleted = { :component => [], :project => [], :file => [] }
     
     # Get the current index to identify deleted files
     index = @index.get
@@ -124,26 +124,11 @@ class Scanner
     index.each do |f, m|
       # Only consider files that no longer exist
       unless File.exist?(f)
-        # Get the file context
-        context = fileContext f
-        
-        # Capture this if it's a component
-        if context[:component]
-          deleted[:component].push context[:component]
-          
-        # Capture this if it's a project asset
-        elsif context[:project]
-          deleted[:project].push context[:project]
-          
-        # Check for individual files
-        elsif context[:file]
-          if (File.extname context[:file]).downcase == ".bmml"
-            deleted[:file].push context[:file]
-          end
-        end
-        
         # Remove the reference from the index
         @index.delete f
+        
+        # Get the file context
+        deleted = fileContext f, deleted
       end
     end
     

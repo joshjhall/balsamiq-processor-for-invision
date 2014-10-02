@@ -23,7 +23,7 @@ This is pretty easy to do.
 3. Click on `Open Local Store Folder`
 4. Copy `BalsamiqMockups.cfg.sample` from the ./config directory to the local store folder
 5. Rename `BalsamiqMockups.cfg.sample` to `BalsamiqMockups.cfg`
-6. Open `BalsamiqMockups.cfg` with a text editor, and update the path.  This should be the absolute path pointing to the Components project on InVision.  You'll need to restart Balsamiq if it's running.
+6. Open `BalsamiqMockups.cfg` with a text editor, and update the path.  This should be the absolute path pointing to the Components project on InVision.  You'll need to restart Balsamiq to get access to the global assets.
 
 You should now have access to all of the global assets.
 

@@ -41,7 +41,7 @@ class Scanner
     elsif File.dirname(f).end_with?('assets')
       # Add the project to the project list
       path = f
-      path.slice!(Shellwords.escape(@settings['accountRoot']) + '/')
+      path = path.slice(Shellwords.escape(@settings['accountRoot'] + '/'))
       path = path.split('/')[0]
       
       # Find just the first directory in the path, this is the project dir

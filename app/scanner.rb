@@ -142,6 +142,37 @@ class Scanner
   end
   
   
+  # Create the baseline directories for each project
+  def createDirs
+    # Step through only the project level directories
+    Dir.glob("*").each do |f|
+      # Make sure we're looking at a directory
+      if File.directory? f
+        # Create /Wireframes if missing
+        unless Dir.exist?(File.join(f, "Assets", "Wireframes"))
+          Dir.mkdir(File.join(f, "Assets", "Wireframes"))
+        end
+        
+        # Create /Wireframes/assets if missing (skip the componentsProject)
+        unless Dir.exist?(File.join(f, "Assets", "Wireframes", "assets")) or \
+          @settings['componentsProject'] == File.absolute_path(File.join(f, "Assets", "Wireframes"))
+          Dir.mkdir(File.join(f, "Assets", "Wireframes", "assets"))
+        end
+        
+        # Create /PM Requirements if missing
+        unless Dir.exist?(File.join(f, "Assets", "PM Requirements"))
+          Dir.mkdir(File.join(f, "Assets", "PM Requirements"))
+        end
+        
+        # Create /Engineering Designs if missing
+        unless Dir.exist?(File.join(f, "Assets", "Engineering Designs"))
+          Dir.mkdir(File.join(f, "Assets", "Engineering Designs"))
+        end
+      end
+    end
+  end
+  
+  
   # Scan all projects to update anything new
   def scan
     # Close any open tabs in Balsamiq, also ensures Balsamiq is open
@@ -156,31 +187,34 @@ class Scanner
       # Get the list of deleted files
       deleted = deletedFiles
       
+      # Make sure newly created projects have the appropriate directories
+      createDirs
+      
       ### Export stale files ###
       # If a component is updated, export everything
       unless stale[:component].empty? and \
         deleted[:component].empty?
         @export.all
-    
+
       # If we aren't exporting everything, export what we found
       else
         # If a project is updated, export each project first
         unless stale[:project].empty?
           stale[:project].each do |p|
             @export.project p
-            
+
             # Drop any duplicates of this project in deleted
             deleted[:project].delete(p)
           end
         end
-        
+
         # If a project has something deleted, export the projects again
         unless deleted[:project].empty?
           deleted[:project].each do |p|
             @export.project p
           end
         end
-      
+
         # Export individual files remaining
         unless stale[:file].empty?
           stale[:file].each do |n|
@@ -191,7 +225,7 @@ class Scanner
             end
           end
         end
-        
+
         # Delete the individual orphan files remaining
         unless deleted[:file].empty?
           deleted[:file].each do |n|

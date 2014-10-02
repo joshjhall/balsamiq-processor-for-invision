@@ -78,7 +78,7 @@ class Scanner
   # Get all of the stale files from the current directory
   def staleFiles
     # Log beginning of stale file check
-    puts @log.info "Looking for stale files"
+    # puts @log.info "Looking for stale files"
     
     # Variables to store what will need processing after running through the index
     stale = { :component => [], :project => [], :file => [] }
@@ -113,7 +113,7 @@ class Scanner
   # Get all of the missing files that are in the index
   def deletedFiles
     # Log beginning of deleted file check
-    puts @log.info "Looking for deleted files"
+    # puts @log.info "Looking for deleted files"
     
     # Variable to store list of files that were deleted
     deleted = { :component => [], :project => [], :file => [] }

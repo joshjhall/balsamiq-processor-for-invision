@@ -179,7 +179,7 @@ class Scanner
   # Scan all projects to update anything new
   def scan
     # Close any open tabs in Balsamiq, also ensures Balsamiq is open
-    cmd = `#{@settings['closeWindows']}`
+    # cmd = `#{@settings['closeWindows']}`
     
     ### Figure out which are stale files ###
     # Change to the root directory
@@ -239,6 +239,6 @@ class Scanner
     end
     
     # Close any open tabs in Balsamiq, also ensures Balsamiq is open
-    cmd = `#{@settings['closeWindows']}`
+    # cmd = `#{@settings['closeWindows']}`
   end
 end

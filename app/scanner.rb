@@ -95,6 +95,9 @@ class Scanner
         not File.dirname(f).end_with?('Screens') and \
         @index.updated? f
         
+        # Log the stale file found
+        puts @log.info "Stale file: `#{f}`"
+        
         # Get the file context
         stale = fileContext f, stale
       end

@@ -54,6 +54,16 @@ class MonitorBMML
   end
   
   
+  # Return true if a valid file type
+  def fileType? f
+    if @settings['fileTypes'].include?((File.extname f).downcase)
+      true
+    else
+      false
+    end
+  end
+  
+  
   # Scan for new and changed files.  These will be added to the working queue
   def scan
     # Change to the root directory
@@ -64,50 +74,63 @@ class MonitorBMML
       
       # Walk through current directory completely
       Dir.glob("**/*").each do |f|
-        # Only check the correct file types
-        if @settings['fileTypes'].include?((File.extname f).downcase)
-          # Always expand the path before sending to the queue
-          f = File.expand_path(f)
+        # Always expand the path before sending to the queue
+        f = File.expand_path(f)
+        
+        # Only look in the ../Wireframes directory
+        if File.dirname(f).match(/\/Assets\/Wireframes/)
           
-          # Only look in the ../Wireframes directory
-          if File.dirname(f).match(/\/Assets\/Wireframes/)
-            
-            # Get the current file info
-            current = @redis.get f.downcase
-            
-            # Start by checking if the MD5 of the file has changed
-            unless current and current == getMD5(f)
-              # If component changed or was added
-              if File.identical?(File.dirname(f), @settings['componentsProject'])
-                puts @log.info "Exporting all projects"
+          # Get the current file info
+          current = @redis.get f.downcase
+          
+          # Start by checking if the MD5 of the file has changed
+          unless current and current == getMD5(f)
+            # If component changed or was added
+            if File.identical?(File.dirname(f), @settings['componentsProject'])
+              puts @log.info "Exporting all projects"
+              
+              # Walk through all projects
+              Dir.glob("**/*").each do |r|
+                # Always expand the path before sending to the queue
+                r = File.expand_path(r)
                 
-                # TODO add support for deleted components
-                # Walk through all projects
-                Dir.glob("**/*.bmml").each do |r|
+                # Only check the correct file types
+                if fileType? r
+                  puts r
+                  puts File.exists? r
                   # Reset all bmml for output, and load them in the low priority backlog
                   @redis.set r.downcase, 'stale'
                   ExportSlow.perform_async r
                 end
-                
-              # TODO add support for deleted assets
-              # If an asset is changed
-              elsif File.dirname(f).end_with? 'assets'
-                # Get the project name out of the directory structure
-                projectName = File.dirname(f).chomp '/Assets/Wireframes/assets'
-                projectName = projectName.slice(@settings['accountRoot'].length + 1, projectName.length)
-                puts @log.info "Exporting project `#{projectName}`"
-                
-                # Walk through only this project
-                Dir.glob("#{File.dirname(f).chomp '/assets'}/**/*.bmml").each do |r|
+              end
+              
+            # TODO add support for deleted assets
+            # If an asset is changed
+            elsif File.dirname(f).end_with? 'assets'
+              # Get the project name out of the directory structure
+              projectName = File.dirname(f).chomp '/Assets/Wireframes/assets'
+              projectName = projectName.slice(@settings['accountRoot'].length + 1, projectName.length)
+              puts @log.info "Exporting project `#{projectName}`"
+              
+              # Walk through only this project
+              Dir.glob("#{File.dirname(f).chomp '/assets'}/**/*").each do |r|
+                # Only check the correct file types
+                if fileType? r
+                  # Always expand the path before sending to the queue
+                  r = File.expand_path(r)
+                  
                   # Reset all bmml for output, and load them in the low priority backlog
                   @redis.set r.downcase, 'stale'
                   ExportNow.perform_async r
                 end
-                
-              # Just reset and output this file
-              elsif current and current != 'stale'
+              end
+              
+            # Just reset and output this file
+            elsif current and current != 'stale'
+              # Only check the correct file types
+              if fileType? f
                 puts @log.info "Exporting file `#{File.basename f}"
-                
+              
                 # Mark the current file stale
                 @redis.set f.downcase, 'stale'
                 ExportNow.perform_async f

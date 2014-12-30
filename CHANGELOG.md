@@ -1,7 +1,17 @@
 HEAD
 ====
 
-* 
+* TODO: Update README
+* TODO: Update cron job plist
+* TODO: Daemonized Sidekiq and Redis setup instructions
+
+
+2.0 beta (2014-12-29)
+---------------------
+
+* Refactored into a Sidekiq queue
+* Major cleanup of race condition bugs
+* REMOVED all delete capabilities, because InVision sync isn't ready (especially through Dropbox)
 
 
 1.0 (2014-09-13)

@@ -78,7 +78,7 @@ class MonitorBMML
             # Start by checking if the MD5 of the file has changed
             unless current and current == getMD5(f)
               # If component changed or was added
-              if File.dirname(f) == @settings['componentsProject']
+              if File.identical?(File.dirname(f), @settings['componentsProject'])
                 puts @log.info "Exporting all projects"
                 
                 # TODO add support for deleted components

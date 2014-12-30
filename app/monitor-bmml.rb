@@ -96,8 +96,6 @@ class MonitorBMML
                 
                 # Only check the correct file types
                 if fileType? r
-                  puts r
-                  puts File.exists? r
                   # Reset all bmml for output, and load them in the low priority backlog
                   @redis.set r.downcase, 'stale'
                   ExportSlow.perform_async r

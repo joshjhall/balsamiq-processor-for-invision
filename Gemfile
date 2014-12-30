@@ -1,6 +1,14 @@
 source 'https://rubygems.org'
 
-gem 'bundler', '~> 1.7'
-gem 'whenever', :require => false
-gem 'rake', '~> 10.3'
-gem 'listen', '~> 2.7'
+gem 'rake'
+gem 'redis', '~> 3.2'
+gem 'sidekiq', '~> 3.3'
+
+# group :development, :test do
+#   gem 'pry'
+# end
+#
+# group :test do
+#   gem 'rspec'
+#   gem 'rack-test'
+# end

@@ -72,6 +72,9 @@ class MonitorBMML
       # Create missing diretories in assets
       createDirs
       
+      # Assume everything is not going to be exported
+      everything = false
+      
       # Walk through current directory completely
       Dir.glob("**/*").each do |f|
         # Always expand the path before sending to the queue
@@ -84,10 +87,13 @@ class MonitorBMML
           current = @redis.get f.downcase
           
           # Start by checking if the MD5 of the file has changed
-          unless current and current == getMD5(f)
+          unless (current and current == getMD5(f.downcase)) or File.directory?(f)
             # If component changed or was added
-            if File.identical?(File.dirname(f), @settings['componentsProject'])
+            if File.identical?(File.dirname(f), @settings['componentsProject']) and not everything
               puts @log.info "Exporting all projects"
+              
+              # Bypass adding duplicates
+              everything = true
               
               # Walk through all projects
               Dir.glob("**/*").each do |r|
@@ -104,7 +110,7 @@ class MonitorBMML
               
             # TODO add support for deleted assets
             # If an asset is changed
-            elsif File.dirname(f).end_with? 'assets'
+            elsif File.dirname(f).end_with? 'assets' and not everything
               # Get the project name out of the directory structure
               projectName = File.dirname(f).chomp '/Assets/Wireframes/assets'
               projectName = projectName.slice(@settings['accountRoot'].length + 1, projectName.length)

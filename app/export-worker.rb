@@ -61,7 +61,7 @@ module ExportWorker
         
         # Update the md5 and status for this record
         log.info "Updating MD5 for `#{File.basename(f)}`"
-        redis.set f.downcase, getMD5(f)
+        redis.set f.downcase, getMD5(f.downcase)
       
       # Bypass this file, because it's no longer stale
       else

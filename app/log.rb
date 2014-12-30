@@ -1,7 +1,7 @@
 require 'fileutils'
 
-# Simple logging class to keep things organized and ensure files are written and closed quickly
 
+# Simple logging class to keep things organized and ensure files are written and closed quickly
 class LogInfo
   # Initialize variables needed
   def initialize file = nil
@@ -12,6 +12,9 @@ class LogInfo
     
     # Set the log file during initialization
     if file
+      # Put in the log directory
+      file = "./log/" + file
+      
       # Make sure the file exists, so we don't have issues getting a complete path
       unless File.exist?(file)
         cmd = `touch #{file}`
@@ -23,7 +26,7 @@ class LogInfo
   end
   
   
-  # Print the info log entry to both the console and the log file
+  # Print the info log entry to the log file
   def info entry
     # Set the final string for the log
     entry = "[#{Time.now.strftime("%Y-%m-%d %H:%M:%S:%L %Z")}] #{entry}"
@@ -37,5 +40,12 @@ class LogInfo
     
     # Return entry so it can be pushed to the console if needed
     entry
+  end
+  
+  # Print the error log entry to the log file
+  # TODO Update error to be distinct in the log files
+  def error entry
+    # Just a pass through to info() for now
+    info entry
   end
 end

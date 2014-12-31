@@ -84,7 +84,7 @@ class MonitorBMML
         if File.dirname(f).match(/\/Assets\/Wireframes/)
           
           # Get the current file info
-          current = @redis.get f.downcase
+          current = @redis.get f.downcase || nil
           
           # Start by checking if the MD5 of the file has changed
           unless (current and current == getMD5(f.downcase)) or File.directory?(f)
@@ -130,7 +130,7 @@ class MonitorBMML
               end
               
             # Just reset and output this file
-            elsif current and current != 'stale'
+            elsif (current and current != 'stale') or current == nil
               # Only check the correct file types
               if fileType? f
                 puts @log.info "Exporting file `#{File.basename f}"
@@ -147,5 +147,7 @@ class MonitorBMML
     
     # Close the redis connection cleanly
     @redis.quit
+    
+    true
   end
 end

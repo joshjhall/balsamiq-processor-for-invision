@@ -108,6 +108,9 @@ class MonitorBMML
                 end
               end
               
+              # Put the process to sleep for an hour, to avoid too many hits when doing a huge export
+              sleep 3600
+              
             # TODO add support for deleted assets
             # If an asset is changed
             elsif File.dirname(f).end_with? 'assets' and not everything

@@ -1,19 +1,40 @@
 {
-  "accountRoot": "~/InVision/[ENTERPRISE NAME]",
+  /* Base directories */
+  "accountRoot": "~/Dropbox/Apps/InvisionApp/[ENTERPRISE NAME]",
   "balsamiqBin": "/Applications/Balsamiq Mockups.app/Contents/MacOS/Balsamiq Mockups",
-  "appDir": "app",
+  
+  
+  /* Log files */
   "closeWindows": "close-windows.applescript",
-  "exportLog": "log/scanner.log",
-  "scannerLog": "log/scanner.log",
-  "listenerLog": "log/scanner.log",
-  "indexLog": "log/scanner.log",
+  "monitorLog": "monitor.log",
+  "workerLog": "worker.log",
+  
+  
+  /* InVision config */
   "componentsProject": "Components",
-  "indexFile": "index.json",
+  
+  
+  /* File type list */
   "fileTypes": [
     ".bmml",
     ".png",
     ".jpg",
     ".jpeg",
     ".gif"
-  ]
+  ],
+  
+  
+  /* Binaries */
+  "trashBin": "/usr/local/bin/trash",
+  
+  
+  /* Redis keys */
+  "hashKey": "file_hash",
+  
+  
+  /* Redis settings */
+  "redisURI": "localhost",
+  "redisPort": 6379,
+  "redisDB": "HAL",
+  "workerNamespace": "WorkerHAL"
 }

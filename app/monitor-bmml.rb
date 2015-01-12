@@ -30,13 +30,14 @@ class MonitorBMML
       # Make sure we're looking at a directory
       if File.directory? f
         # Create /Wireframes if missing
-        unless Dir.exist?(File.join(f, "Assets", "Wireframes"))
+        if File.join(f, "Assets", "Wireframes") and not Dir.exist?(File.join(f, "Assets", "Wireframes"))
           Dir.mkdir(File.join(f, "Assets", "Wireframes"))
         end
         
         # Create /Wireframes/assets if missing (skip the componentsProject)
-        unless Dir.exist?(File.join(f, "Assets", "Wireframes", "assets")) or \
-          @settings['componentsProject'] == File.absolute_path(File.join(f, "Assets", "Wireframes"))
+        if File.join(f, "Assets", "Wireframes", "assets") and \
+          not Dir.exist?(File.join(f, "Assets", "Wireframes", "assets")) and \
+          not File.identical?(@settings['componentsProject'],File.absolute_path(File.join(f, "Assets", "Wireframes")))
           Dir.mkdir(File.join(f, "Assets", "Wireframes", "assets"))
         end
         

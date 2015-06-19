@@ -4,6 +4,7 @@ HEAD
 * TODO: Update README
 * TODO: Update cron job plist
 * TODO: Daemonized Sidekiq and Redis setup instructions
+* TODO: Make monitor thread-safe
 
 
 2.0 beta (2014-12-29)
